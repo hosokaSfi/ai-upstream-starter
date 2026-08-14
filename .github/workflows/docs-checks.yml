@@ -1,0 +1,23 @@
+# .github/workflows/docs-checks.yml に配置。
+# PRごとにドキュメントの機械チェックを実行し、「ドキュメントを壊すPR」をマージ前に弾く。AI不使用。
+name: docs-checks
+on:
+  pull_request:
+    paths: ["docs/**"]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: トレーサビリティ(ID整合)
+        run: python3 tools/check_traceability.py docs
+      - name: Mermaid構文
+        run: |
+          npm install -g @mermaid-js/mermaid-cli
+          npx puppeteer browsers install chrome-headless-shell
+          python3 tools/validate_mermaid.py docs
+      # ゲート判定は警告扱い(承認前のドラフトPRを弾かないため)。リリースブランチでは外す
+      - name: 実装開始ゲート(警告のみ)
+        run: python3 tools/check_gate.py docs || echo "::warning::ゲート未通過(詳細はログ)"

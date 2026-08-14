@@ -1,0 +1,20 @@
+# OS / エディタ
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.pyc
+
+# Node
+node_modules/
+
+# ローカル個人設定(チーム共有しないメモ)
+CLAUDE.local.md
+.claude/settings.local.json
+
+# ※ docs/.state/(工程の進行状態)と docs/wip/(継続メモ)は
+#   意図的にコミット対象。別マシン・別メンバーでも /go で再開できるようにするため。

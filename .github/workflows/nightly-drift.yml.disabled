@@ -1,0 +1,37 @@
+# .github/workflows/nightly-drift.yml に配置。
+# 毎晩、Claude Codeヘッドレスモード(claude -p)で「設計書と実装の乖離」を検出してIssue起票する。
+# 必要: リポジトリSecretsに CLAUDE_CODE_OAUTH_TOKEN(または ANTHROPIC_API_KEY)。
+# コストに注意: 1回の実行でリポジトリ規模に応じたトークンを消費する。まず週1で試すのも可。
+name: nightly-drift
+on:
+  schedule:
+    - cron: "0 18 * * 1-5"   # JST 3:00 平日
+  workflow_dispatch: {}       # 手動実行も可
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Claude Code インストール
+        run: npm install -g @anthropic-ai/claude-code
+      - name: ドリフト検知(ヘッドレス実行)
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          claude -p "code-scout サブエージェントの方針で、docs/ の設計書(基本設計・DB設計・API仕様)と
+          src/ の実装の乖離を調査してください。対象: (1)設計書にあるが未実装のAPI/画面
+          (2)実装にあるが設計書にない機能・カラム・エンドポイント (3)バリデーション・権限の食い違い。
+          出典(ファイル:行 と ドキュメント§)つきで drift_report.md に保存。乖離ゼロなら『乖離なし』とだけ書く。" \
+            --allowedTools "Read,Grep,Glob,Write" \
+            --permission-mode auto
+      - name: 乖離があればIssue起票
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -f drift_report.md ] && ! grep -q "乖離なし" drift_report.md; then
+            gh issue create --title "設計と実装のドリフト検知 $(date +%Y-%m-%d)" \
+              --body-file drift_report.md --label "type:ドリフト"
+          fi
