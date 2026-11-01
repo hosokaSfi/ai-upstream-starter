@@ -154,7 +154,9 @@ export function PlacementBoard() {
     if (d.type === "palette") {
       const start = openTime + idx * slotMinutes;
       const w = windowsOf(d.staffId).find((x) => x.start <= start && start < x.end);
-      const end = Math.min(closeTime, w ? w.end : start + 240);
+      const ws = windowsOf(d.staffId);
+      const len = w ? w.end - start : ws[0] ? ws[0].end - ws[0].start : 240;
+      const end = Math.min(closeTime, start + len);
       if (absentIds.has(d.staffId)) toast.warning("このスタッフはこの日に休みの報告をしています");
       repo.assignments.create({ storeId: store.id, date, roomId, staffId: d.staffId, start, end, status: "confirmed" });
     } else {

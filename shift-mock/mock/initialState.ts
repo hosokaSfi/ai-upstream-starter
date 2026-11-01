@@ -217,8 +217,8 @@ export function buildInitialState(today: DateStr): DataState {
   ];
 
   const logs: OperationLog[] = [
-    { id: "lg0", at: iso(2, 9), actorId: "owner", actorName: "本部 オーナー", role: "owner", storeId: "st1", action: "店舗設定を変更", detail: "中央店: 提出期限日 20日" },
     { id: "lg1", at: iso(1, 17), actorId: "ad01", actorName: ADMINS[1].name, role: "admin", storeId: "st1", action: "確定シフトを公開", detail: "中央店 翌日分" },
+    { id: "lg0", at: iso(2, 9), actorId: "owner", actorName: "本部 オーナー", role: "owner", storeId: "st1", action: "店舗設定を変更", detail: "中央店: 提出期限日 20日" },
   ];
 
   return {

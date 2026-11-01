@@ -207,11 +207,17 @@ export const mockRepositories: Repositories = {
       setData((d) => ({ finePayments: [...d.finePayments, { ...p, id: uid("fp") }] }));
       log("罰金の支払いを登録", `${staffName(p.staffId)} ${p.amount.toLocaleString()}円`);
     },
+    sendReminder(staffIds, month) {
+      log("シフト希望の提出をリマインド", `${month} 未提出 ${staffIds.length}名`);
+    },
   },
 
   settings: {
     setScoreWeight(key, weight) {
       setData((d) => ({ scoreItems: d.scoreItems.map((i) => (i.key === key ? { ...i, weight } : i)) }));
+    },
+    commitScoreWeights() {
+      log("スコア比重を変更", data().scoreItems.map((i) => `${i.label}${i.weight}`).join(" / "));
     },
     resetScoreWeights() {
       setData(() => ({ scoreItems: DEFAULT_SCORE_ITEMS.map((i) => ({ ...i })) }));
@@ -313,6 +319,15 @@ export const mockRepositories: Repositories = {
       setData((d) => ({ admins: d.admins.map((x) => (x.id === id ? { ...x, ...patch } : x)) }));
       const what = patch.active === false ? "停止" : patch.active === true ? "再開" : patch.permissions ? "権限変更" : "更新";
       log(`管理者アカウントを${what}`, a?.name ?? id);
+    },
+  },
+
+  sheets: {
+    logExport(rows, range) {
+      log("確定シフトを書き出し", `${range} ${rows}行`);
+    },
+    logImport(rows) {
+      log("スプレッドシートを読み取り", `${rows}行`);
     },
   },
 

@@ -57,10 +57,14 @@ export interface CommunicationRepository {
   markHandoverRead(id: ID): void;
   addFine(f: Omit<Fine, "id">): void;
   addFinePayment(p: Omit<FinePayment, "id">): void;
+  /** シフト希望の未提出者へリマインド(本番は FCM プッシュ通知 / メール) */
+  sendReminder(staffIds: ID[], month: MonthStr): void;
 }
 
 export interface SettingsRepository {
   setScoreWeight(key: ScoreItemKey, weight: number): void;
+  /** スライダー操作の確定時に呼ぶ(履歴に残す) */
+  commitScoreWeights(): void;
   resetScoreWeights(): void;
   upsertAlertSetting(s: AlertSetting): void;
   removeAlertSetting(staffId: ID): void;
@@ -88,6 +92,12 @@ export interface AdminRepository {
   update(id: ID, patch: Partial<Omit<AdminUser, "id">>): void;
 }
 
+export interface SheetsRepository {
+  /** モック: 書き出し内容を返すだけ。本番は Google Sheets API(サーバー側)で書き込み */
+  logExport(rows: number, range: string): void;
+  logImport(rows: number): void;
+}
+
 export interface Repositories {
   auth: AuthRepository;
   assignments: AssignmentRepository;
@@ -100,6 +110,7 @@ export interface Repositories {
   rooms: RoomRepository;
   staff: StaffRepository;
   admins: AdminRepository;
+  sheets: SheetsRepository;
   /** デモ用: データを初期状態に戻す */
   resetDemo(): void;
 }
