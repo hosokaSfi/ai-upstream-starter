@@ -53,7 +53,7 @@ export function PlacementBoard() {
   const metrics = useMetrics("6m");
 
   const slotCount = Math.ceil((closeTime - openTime) / slotMinutes);
-  const slotPx = slotMinutes === 30 ? 34 : 60;
+  const slotPx = slotMinutes === 30 ? 28 : 56;
   const gridW = slotCount * slotPx;
   const pct = (m: Minutes) => ((m - openTime) / (closeTime - openTime)) * 100;
 
